@@ -150,7 +150,8 @@ public class AcPIDControl extends Action
 			controller.setOutputRange(minOut, maxOut);
 			if(tolerance instanceof Percentage) controller.setPercentTolerance(tolerance.value);
 			else controller.setAbsoluteTolerance(tolerance.value);
-			controller.setToleranceBuffer(15);
+			//TODO Removed until WPILib's documentation on the replacement for this call is clearer, or tests show it's irrelevant.
+			//controller.setToleranceBuffer(15);
 			controller.setSetpoint(target);
 			controller.enable();
 			
