@@ -8,4 +8,4 @@ This module contains all classes that introduce complex motion algorithms, such 
 
 It requires the [core Arachne library](https://github.com/Team4613-BarkerRedbacks/Arachne/releases).
 
-RELEASE VERSION: Arachne 2.0.3 (2017)
+RELEASE VERSION: Arachne 2.1.0 (2018)
