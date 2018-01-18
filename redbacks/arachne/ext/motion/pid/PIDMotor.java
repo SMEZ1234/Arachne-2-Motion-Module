@@ -1,5 +1,6 @@
 package redbacks.arachne.ext.motion.pid;
 
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import redbacks.arachne.lib.actions.Action;
 import redbacks.arachne.lib.motors.CtrlDrive;
