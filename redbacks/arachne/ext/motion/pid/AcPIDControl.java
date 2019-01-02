@@ -2,6 +2,8 @@ package redbacks.arachne.ext.motion.pid;
 
 import edu.wpi.first.wpilibj.*;
 import redbacks.arachne.ext.motion.MotionExtender;
+import redbacks.arachne.ext.motion.pid.PIDMotor;
+import redbacks.arachne.ext.motion.pid.Tolerances;
 import redbacks.arachne.ext.motion.pid.Tolerances.Percentage;
 import redbacks.arachne.lib.actions.Action;
 import redbacks.arachne.lib.checks.ChFalse;
@@ -14,13 +16,13 @@ import redbacks.arachne.lib.checks.Check;
  */
 public class AcPIDControl extends Action
 {
-	double target, minIn, maxIn, minOut, maxOut;
-	boolean isContinuous, shouldFinish;
+	protected double target, minIn, maxIn, minOut, maxOut;
+	protected boolean isContinuous, shouldFinish;
 
-	Tolerances tolerance;
-	PIDSource input;
-	PIDSourceType type;
-	PIDController[] controllers;
+	protected Tolerances tolerance;
+	protected PIDSource input;
+	protected PIDSourceType type;
+	public final PIDController[] controllers;
 
 	/**
 	 * Constructor for an action for a {@link PIDController}. It will end once it reaches its target.
@@ -145,13 +147,13 @@ public class AcPIDControl extends Action
 		input.setPIDSourceType(type);
 
 		for(PIDController controller : controllers) {
-			controller.setContinuous(isContinuous);
 			controller.setInputRange(minIn, maxIn);
+			controller.setContinuous(isContinuous);
 			controller.setOutputRange(minOut, maxOut);
 			if(tolerance instanceof Percentage) controller.setPercentTolerance(tolerance.value);
 			else controller.setAbsoluteTolerance(tolerance.value);
-			//TODO Removed until WPILib's documentation on the replacement for this call is clearer, or tests show it's irrelevant.
-			//controller.setToleranceBuffer(15);
+			// TODO Removed until WPILib's documentation on the replacement for this call is clearer, or tests show it's irrelevant.
+			// controller.setToleranceBuffer(15);
 			controller.setSetpoint(target);
 			controller.enable();
 			
@@ -167,6 +169,9 @@ public class AcPIDControl extends Action
 	}
 
 	public boolean isDone() {
-		return shouldFinish ? (controllers[0].onTarget() ? true : false) : false;
+		if(!shouldFinish) return false;
+		
+		if(tolerance instanceof Tolerances.Absolute) return Math.abs(input.pidGet() - target) < tolerance.value;
+		else return Math.abs(input.pidGet() - target) < tolerance.value / 100 * target;
 	}
 }
