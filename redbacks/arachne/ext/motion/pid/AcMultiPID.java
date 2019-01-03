@@ -126,8 +126,7 @@ public class AcMultiPID extends Action
 		 */
 		public double combine(PIDAxis[] axes) {
 			double sum = 0;
-			for(PIDAxis axisOutput : axes)
-				sum += axisOutput.output;
+			for(PIDAxis axisOutput : axes) sum += axisOutput.output;
 			return sum;
 		}
 	}
