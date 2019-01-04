@@ -10,7 +10,7 @@ public class Path
 	
 	public Path(double[]... waypoints) {
 		this.waypoints = waypoints;
-		totalDistance = waypoints[waypoints.length-1][0] * MotionSettings.encoderTicksPerMetre;
+		totalDistance = waypoints[waypoints.length-1][0] * MotionSettings.getEncoderTicksPerMetre();
 	}
 	
 	public void reset() {
@@ -18,24 +18,18 @@ public class Path
 	}
 	
 	public double getAngleFromDistance(double distance) {
-		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.encoderTicksPerMetre)) {
-			progressIndex++;
-		}
+		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.getEncoderTicksPerMetre())) progressIndex++;
 		
 		double[] angles = new double[Math.min(MotionSettings.trajectoryAngleForesight, waypoints.length - progressIndex)];
-		
 		for(int i = 0; i < angles.length; i++) angles[i] = waypoints[i + progressIndex][1];
 		
 		return avg(angles);
 	}
 	
 	public double getCurvatureFromDistance(double distance) {
-		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.encoderTicksPerMetre)) {
-			progressIndex++;
-		}
+		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.getEncoderTicksPerMetre())) progressIndex++;
 		
 		double[] curvatures = new double[Math.min(MotionSettings.trajectoryAngleForesight, waypoints.length - progressIndex)];
-		
 		for(int i = 0; i < curvatures.length; i++) curvatures[i] = waypoints[i + progressIndex][2];
 		
 		return avg(curvatures);
