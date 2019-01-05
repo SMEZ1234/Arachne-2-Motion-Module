@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.PIDController;
 
 /**
  * Takes the place of {@link PIDController.Tolerance}, as it isn't visible.
- * {@link AcPIDControl} and {@link AcMultiPID.PIDParams} use it to determine which type of PIDController.Tolerance they should set.
+ * {@link AcPIDControl} and {@link PIDParams} use it to determine which type of PIDController.Tolerance they should set.
  *
  * @author Sean Zammit
  */
