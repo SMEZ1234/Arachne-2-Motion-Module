@@ -26,6 +26,7 @@ public class Path
 		return avg(angles);
 	}
 	
+	@Deprecated
 	public double getCurvatureFromDistance(double distance) {
 		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.getEncoderTicksPerMetre())) progressIndex++;
 		

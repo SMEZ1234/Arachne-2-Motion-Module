@@ -99,8 +99,9 @@ public class AcPath extends Action
 		if(minOut != null && maxOut != null) output = Math.max(Math.min(output, maxOut.get()), minOut.get());
 		
 		drivetrain.tankDrive(
-				(output - (rotationOut.output < 0 ? getCurvatureCompensation() * Math.abs(output) : 0) + rotationOut.output * Math.abs(output)) * driveMults[0], 
-				(output - (rotationOut.output > 0 ? getCurvatureCompensation() * Math.abs(output) : 0) * Math.abs(output) - rotationOut.output * Math.abs(output)) * driveMults[1]);
+				(output + rotationOut.output) * driveMults[0],
+				(output - rotationOut.output) * driveMults[1]
+		);
 	}
 	
 	public void onFinish() {
@@ -112,6 +113,7 @@ public class AcPath extends Action
 		return acLinear.isDone();
 	}
 	
+	@Deprecated
 	public double getCurvatureCompensation() {
 		return Math.max(Math.min(Math.log(Math.abs(path.getCurvatureFromDistance(Math.abs(encoder.get()))) + 1) / 1.2, 1), 0);
 	}
