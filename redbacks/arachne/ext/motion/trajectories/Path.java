@@ -8,9 +8,12 @@ public class Path
 	private int progressIndex = 0;
 	public double totalDistance;
 	
-	public Path(double[]... waypoints) {
+	public MotionSettings settings;
+	
+	public Path(MotionSettings settings, double[]... waypoints) {
+		this.settings = settings;
 		this.waypoints = waypoints;
-		totalDistance = waypoints[waypoints.length-1][0] * MotionSettings.getEncoderTicksPerMetre();
+		totalDistance = waypoints[waypoints.length-1][0] * settings.getEncoderTicksPerMetre();
 	}
 	
 	public void reset() {
@@ -18,9 +21,9 @@ public class Path
 	}
 	
 	public double getAngleFromDistance(double distance) {
-		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.getEncoderTicksPerMetre())) progressIndex++;
+		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * settings.getEncoderTicksPerMetre())) progressIndex++;
 		
-		double[] angles = new double[Math.min(MotionSettings.trajectoryAngleForesight, waypoints.length - progressIndex)];
+		double[] angles = new double[Math.min(settings.trajectoryAngleForesight, waypoints.length - progressIndex)];
 		for(int i = 0; i < angles.length; i++) angles[i] = waypoints[i + progressIndex][1];
 		
 		return avg(angles);
@@ -28,9 +31,9 @@ public class Path
 	
 	@Deprecated
 	public double getCurvatureFromDistance(double distance) {
-		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * MotionSettings.getEncoderTicksPerMetre())) progressIndex++;
+		while(progressIndex < waypoints.length - 1 && Math.abs(distance) > Math.abs(waypoints[progressIndex][0] * settings.getEncoderTicksPerMetre())) progressIndex++;
 		
-		double[] curvatures = new double[Math.min(MotionSettings.trajectoryAngleForesight, waypoints.length - progressIndex)];
+		double[] curvatures = new double[Math.min(settings.trajectoryAngleForesight, waypoints.length - progressIndex)];
 		for(int i = 0; i < curvatures.length; i++) curvatures[i] = waypoints[i + progressIndex][2];
 		
 		return avg(curvatures);

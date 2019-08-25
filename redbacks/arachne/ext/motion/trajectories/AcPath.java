@@ -1,11 +1,10 @@
 package redbacks.arachne.ext.motion.trajectories;
 
-import static redbacks.arachne.ext.motion.MotionSettings.*;
-
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import redbacks.arachne.core.ArachneRobot;
 import redbacks.arachne.ext.motion.pid.Tolerances;
+import redbacks.arachne.ext.motion.MotionSettings;
 import redbacks.arachne.ext.motion.pid.AcMultiPID.PIDAxis;
 import redbacks.arachne.ext.motion.pid.AcPIDControl;
 import redbacks.arachne.ext.motion.pid.AcPIDDynamicControl;
@@ -24,6 +23,7 @@ import redbacks.arachne.lib.sensors.NumericSensor;
  */
 public class AcPath extends Action
 {
+	public MotionSettings settings;
 	public Path path;
 	
 	public CtrlDrivetrain drivetrain;
@@ -42,9 +42,10 @@ public class AcPath extends Action
 	
 	public GettableNumber minOut, maxOut;
 	
-	public AcPath(Check check, boolean shouldFinish, Path path, CtrlDrivetrain drivetrain, double leftMult, double rightMult, NumericSensor gyro,
+	public AcPath(Check check, boolean shouldFinish, MotionSettings settings, Path path, CtrlDrivetrain drivetrain, double leftMult, double rightMult, NumericSensor gyro,
 			NumericSensor encoder, boolean invertEncoder, Tolerances tolerance) {
 		super(check);
+		this.settings = settings;
 		this.path = path;
 		this.drivetrain = drivetrain;
 		this.driveMults[0] = leftMult;
@@ -57,7 +58,7 @@ public class AcPath extends Action
 		this.acRotation =
 			new AcPIDDynamicControl(
 				new ChFalse(), false,
-				drivePIDRotKP, drivePIDRotKI, drivePIDRotKD, 0,
+				settings.drivePIDRotKP, settings.drivePIDRotKI, settings.drivePIDRotKD, 0,
 				new GyroSetpoint(path, encoder),
 				new Tolerances.Absolute(0), gyro,
 				true, -180, 180,
@@ -66,17 +67,17 @@ public class AcPath extends Action
 		this.acLinear =
 			new AcPIDControl(
 				new ChFalse(), shouldFinish,
-				drivePIDLinearKP, drivePIDLinearKI, drivePIDLinearKD, 0,
+				settings.drivePIDLinearKP, settings.drivePIDLinearKI, settings.drivePIDLinearKD, 0,
 				path.totalDistance * (invertEncoder ? -1 : 1),
 				tolerance, encoder,
-				distanceEncoderIsContinuous, distanceEncoderMin, distanceEncoderMax,
-				PIDSourceType.kDisplacement, trajectoryMaxNegSpeed, trajectoryMaxPosSpeed, linearOut
+				settings.distanceEncoderIsContinuous, settings.distanceEncoderMin, settings.distanceEncoderMax,
+				PIDSourceType.kDisplacement, settings.trajectoryMaxNegSpeed, settings.trajectoryMaxPosSpeed, linearOut
 		);
 	}
 	
-	public AcPath(Check check, boolean shouldFinish, Path path, CtrlDrivetrain drivetrain, double leftMult, double rightMult, NumericSensor gyro,
+	public AcPath(Check check, boolean shouldFinish, MotionSettings settings, Path path, CtrlDrivetrain drivetrain, double leftMult, double rightMult, NumericSensor gyro,
 			NumericSensor encoder, boolean invertEncoder, Tolerances tolerance, GettableNumber minOut, GettableNumber maxOut) {
-		this(check, shouldFinish, path, drivetrain, leftMult, rightMult, gyro, encoder, invertEncoder, tolerance);
+		this(check, shouldFinish, settings, path, drivetrain, leftMult, rightMult, gyro, encoder, invertEncoder, tolerance);
 		this.minOut = minOut;
 		this.maxOut = maxOut;
 	}
@@ -135,12 +136,14 @@ public class AcPath extends Action
 	
 	public static class ChangeMinMax implements GettableNumber
 	{
+		public MotionSettings settings;
 		public Path path;
 		public NumericSensor encoder;
 		public int endProx;
 		public double newSpeed;
 		
-		public ChangeMinMax(Path path, NumericSensor encoder, int endProx, double newSpeed) {
+		public ChangeMinMax(MotionSettings settings, Path path, NumericSensor encoder, int endProx, double newSpeed) {
+			this.settings = settings;
 			this.path = path;
 			this.encoder = encoder;
 			this.endProx = endProx;
@@ -148,7 +151,7 @@ public class AcPath extends Action
 		}
 		
 		public double get() {
-			return Math.abs(encoder.get() - path.totalDistance) < endProx ? newSpeed : (newSpeed < 0 ? trajectoryMaxNegSpeed : trajectoryMaxPosSpeed);
+			return Math.abs(encoder.get() - path.totalDistance) < endProx ? newSpeed : (newSpeed < 0 ? settings.trajectoryMaxNegSpeed : settings.trajectoryMaxPosSpeed);
 		}
 	}
 }
